@@ -17,8 +17,11 @@ function setcardType(type) {
         default: ['back', 'gray'],   
     }    
     
+    // Chamando as cores
     ccBgColor01.setAttribute('fill', colors[type][0]),
     ccBgColor02.setAttribute('fill', colors[type][1]),
+
+    // chamando as imagens
     ccLogo.setAttribute('src', `cc-${type}.svg`)
 }
 
@@ -56,18 +59,19 @@ const expirationDatePattern = {
 }
 const expirationDateMasked = IMask(expirationDate, expirationDatePattern)
 
+// Logica do numero do cartões
 const cardNumber = document.querySelector('#card-number')
 const cardNumberPattern = {
     mask: [
         {
             mask: '0000 0000 0000 0000',
-            RegExp: /^4\d{0, 15}/,
-            cardType: 'visa'
+            regex: /^4\d{0,15}/,
+            cardType: 'Visa'
         },
         {
             mask: '0000 0000 0000 0000',
-            RegExp: /(5[1-5]\d{0,2}|^22[2-9]\d|^2[3-7]\d{0,2})\d{0,12}/,
-            cardType: 'mastercard'
+            regex: /(^5[1-5]\d{0,2}|^22[2-9]\d|^2[3-7]\d{0,2})\d{0,12}/,
+            cardType: 'Mastercard'
         },
         {
             mask: '0000 0000 0000 0000',
@@ -77,9 +81,20 @@ const cardNumberPattern = {
     dispatch: function (appended, dynamicMasked) {
         // Apenas aceita digitos, e não letras
         const number = (dynamicMasked.value + appended).replace(/\D/g, '')
+
+        const foundMask = dynamicMasked.compiledMasks.find(function (item) {
+            //Ele vai me retornar algo, se for TRUE, ele me retorna algo, se for FALSE, não me retorna nada
+            return number.match(item.regex)
+            // Apenas pegando o item do regex
+        })
+
+        console.log(foundMask)
+
+        return foundMask
     }
 }
 
+const cardNumberMasked = IMask(cardNumber, cardNumberPattern)
 
 
 

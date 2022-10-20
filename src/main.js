@@ -132,7 +132,7 @@ function updateSecurityCode(code){
 cardNumberMasked.on('accept', () => {
 
     // Estou acessando dentro do cardNumberMasked o mask e dentro do o currentMask escolher a melhor opção que se encaixa no tipo do cartão
-    const cardType = cardNumberMasked.masked.currentMask.cardtype[1]
+    const cardType = cardNumberMasked.masked.currentMask.cardtype
     
     setCardType(cardType)
 

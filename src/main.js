@@ -8,7 +8,7 @@ const ccBgColor02 = document.querySelector('.cc-bg svg > g g:nth-child(2) path')
 // Pegando a img dos cartões
 const ccLogo = document.querySelector('.cc-logo span:nth-child(2) img')
 
-function setCardType(type) {
+function setTypeCard(type) {
     const colors = {
         visa: ["#436D99", "#2D57F2"],
         mastercard: ["#DF6F29", "#C69347"],
@@ -23,7 +23,7 @@ function setCardType(type) {
     ccLogo.setAttribute('src', `cc-${type}.svg`)
 }
 
-globalThis.setCardType = setCardType
+globalThis.setTypeCard = setTypeCard
 
 // Security Code
 const securityCode = document.querySelector('#security-code')
@@ -64,32 +64,32 @@ const cardNumberPattern = {
         {
             mask: '0000 0000 0000 0000',
             regex: /^4\d{0,15}/,
-            cardtype: 'Visa'
+            cardtype: 'visa'
         },
         {
             mask: '0000 0000 0000 0000',
             regex: /(^5[1-5]\d{0,2}|^22[2-9]\d|^2[3-7]\d{0,2})\d{0,12}/,
-            cardtype: 'Mastercard'
+            cardtype: 'mastercard'
         },
         {
             mask: '0000 0000 0000 0000',
-            cardtype: 'Default'
+            cardtype: 'default'
         },
     ],
-    dispatch: function (appended, dynamicMasked) {
+    dispatch: function  (appended, dynamicMasked) {
         // Apenas aceita digitos, e não letras
         const number = (dynamicMasked.value + appended).replace(/\D/g, '')
 
-        const foundMask = dynamicMasked.compiledMasks.find(function (item) {
+        const foundMask = (dynamicMasked.compiledMasks.find(function (item) {
             //Ele vai me retornar algo, se for TRUE, ele me retorna algo, se for FALSE, não me retorna nada
             return number.match(item.regex)
             // Apenas pegando o item do regex
         })
+        )
 
-        // setCardType(foundMask.cardtype)
-
+        setTypeCard(foundMask.cardtype)
         return foundMask
-    }
+    },
 }
 
 const cardNumberMasked = IMask(cardNumber, cardNumberPattern)
@@ -124,28 +124,37 @@ securityCodeMasked.on('accept', () => {
 function updateSecurityCode(code){
     const ccSecurity = document.querySelector('.cc-security .value')
 
-    ccSecurity.innerText = code.length > 0 ? securityCodeMasked : '1234'
+    ccSecurity.innerText = code.length > 0 ? securityCodeMasked.value : '1234'
 }
 
 // Pegando o numero do cartão atraves dos mesmo exemplos.
 // Este formato faz a mesmo coisa, apenas achei mais facil de escrever e entende a logica.
 cardNumberMasked.on('accept', () => {
 
-    // Estou acessando dentro do cardNumberMasked o mask e dentro do o currentMask escolher a melhor opção que se encaixa no tipo do cartão
+    // Estou acessando dentro do cardNumberMasked o masked e dentro do o currentMask escolher a melhor opção que se encaixa no tipo do cartão
     const cardType = cardNumberMasked.masked.currentMask.cardtype
-    
-    setCardType(cardType)
+    setTypeCard(cardType)
 
     updateCardNumber(cardNumberMasked.value)
 
 })
 
-function updateCardNumber (number) {
+function updateCardNumber(number) {
     const ccNumber = document.querySelector('.cc-number')
 
     ccNumber.innerText = number.length > 0 ? number : ''
 }
 
+// Bloco com função Expiraton do cartão
+expirationDateMasked.on('accept', () => {
+
+    updateExpirationDate(expirationDateMasked.value)
+})
+function updateExpirationDate(date) {
+    const ccExpiration = document.querySelector('.cc-expiration .value')
+
+    ccExpiration.innerText = date.length > 0 ? date : ''
+}
 
 
 
